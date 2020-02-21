@@ -8,17 +8,12 @@ import {
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
-  Switch,
-  Select,
-  MenuItem,
-  FormControl
+  Switch
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withNamespaces } from 'react-i18next';
-import i18n from '../../i18n';
 import { colors } from '../../theme'
 
-import BuiltWithModal from '../builtwith/builtwithModal.jsx'
 import InvestAllModal from './investAllModal.jsx'
 import UnlockModal from '../unlock/unlockModal.jsx'
 import Snackbar from '../snackbar'
@@ -31,10 +26,6 @@ import {
   BALANCES_RETURNED,
   INVEST_RETURNED,
   REDEEM_RETURNED,
-  CONNECT_METAMASK,
-  LEDGER_CONNECTED,
-  CONNECT_METAMASK_PASSIVE,
-  METAMASK_CONNECTED,
   CONNECTION_CONNECTED,
   CONNECTION_DISCONNECTED
 } from '../../constants'
@@ -156,30 +147,6 @@ const styles = theme => ({
       minWidth: 'auto',
     }
   },
-  footer: {
-    padding: '24px',
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-end',
-    width: '100%',
-    alignItems: 'center',
-    [theme.breakpoints.up('sm')]: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      width: '100%',
-      alignItems: 'center',
-    }
-  },
-  footerLinks: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    maxWidth: '350px'
-  },
-  footerText: {
-    cursor: 'pointer'
-  },
   buttonText: {
     fontWeight: '700',
     color: 'white',
@@ -235,14 +202,6 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
-  languageContainer: {
-    paddingLeft: '12px',
-    display: 'none'
-  },
-  selectInput: {
-    fontSize: '14px',
-    color: colors.pink
-  },
   tableHeadContainer: {
     width: '100%',
     display: 'flex',
@@ -265,8 +224,6 @@ class InvestSimple extends Component {
     this.state = {
       assets: store.getStore('assets'),
       account: store.getStore('account'),
-      languages: store.getStore('languages'),
-      language: 'en',
       modalOpen: false,
       modalBuiltWithOpen: false,
       modalInvestAllOpen: false,
@@ -276,8 +233,6 @@ class InvestSimple extends Component {
     }
   }
   componentWillMount() {
-    // emitter.on(METAMASK_CONNECTED, this.metamaskConnected);
-    // emitter.on(LEDGER_CONNECTED, this.ledgerConnected);
     emitter.on(INVEST_RETURNED, this.investReturned);
     emitter.on(REDEEM_RETURNED, this.redeemReturned);
     emitter.on(ERROR, this.errorReturned);
@@ -288,8 +243,6 @@ class InvestSimple extends Component {
   }
 
   componentWillUnmount() {
-    // emitter.removeListener(METAMASK_CONNECTED, this.metamaskConnected);
-    // emitter.removeListener(LEDGER_CONNECTED, this.ledgerConnected);
     emitter.removeListener(INVEST_RETURNED, this.investReturned);
     emitter.removeListener(REDEEM_RETURNED, this.redeemReturned);
     emitter.removeListener(ERROR, this.errorReturned);
@@ -323,28 +276,6 @@ class InvestSimple extends Component {
   connectionDisconnected = () => {
     this.setState({ account: store.getStore('account') })
   }
-
-  metamaskConnected = () => {
-    this.setState({ account: store.getStore('account') })
-
-    dispatcher.dispatch({ type: GET_BALANCES, content: {} })
-
-    const that = this
-    setTimeout(() => {
-      const snackbarObj = { snackbarMessage: 'Metamask wallet succesfully connected.', snackbarType: 'Info' }
-      that.setState(snackbarObj)
-    })
-  };
-
-  ledgerConnected = () => {
-    this.setState({ account: store.getStore('account') })
-
-    const that = this
-    setTimeout(() => {
-      const snackbarObj = { snackbarMessage: 'Ledger succesfully connected.', snackbarType: 'Info' }
-      that.setState(snackbarObj)
-    })
-  };
 
   errorReturned = (error) => {
     const snackbarObj = { snackbarMessage: null, snackbarType: null }
@@ -389,8 +320,6 @@ class InvestSimple extends Component {
       modalInvestAllOpen,
       snackbarMessage,
       hideV1,
-      languages,
-      language
     } = this.state
     var address = null;
     if (account.address) {
@@ -421,11 +350,6 @@ class InvestSimple extends Component {
               <Typography variant='h2'>{ t('InvestSimple.Intro') }</Typography>
             </div>
           }
-          <div className={ classes.balancesContainer }>
-            { false && <div className={ classes.overlay } onClick={ this.overlayClicked }>
-              <Typography variant='h1' >{ t('InvestSimple.Connect') }</Typography>
-            </div>}
-          </div>
 
           {!account.address &&
             <div className={ classes.connectContainer }>
@@ -454,34 +378,7 @@ class InvestSimple extends Component {
           </div> */}
         </div>
         { loading && <Loader /> }
-        <div className={classes.footer}>
-          <div className={classes.footerLinks}>
-            <Typography onClick={()=> window.open("https://docs.iearn.finance", "_blank")} className={ classes.footerText } variant={ 'h6'}>{ t('InvestSimple.About') }</Typography>
-            <Typography onClick={()=> window.open("https://docs.iearn.finance", "_blank")} className={ classes.footerText } variant={ 'h6'}>{ t('InvestSimple.Docs') }</Typography>
-            <Typography onClick={()=> window.open("https://github.com/iearn-finance", "_blank")} className={ classes.footerText } variant={ 'h6'}>{ t('InvestSimple.Code') }</Typography>
-            <Typography onClick={()=> window.open("https://t.me/iearnfinance", "_blank")} className={ classes.footerText } variant={ 'h6'}>{ t('InvestSimple.Telegram') }</Typography>
-            <Typography onClick={()=> window.open("/apr", "_blank")} className={ classes.footerText } variant={ 'h6'}>{ t('InvestSimple.Yield') }</Typography>
-            <Typography onClick={ this.builtWithOverlayClicked } className={ classes.footerText } variant={ 'h6'}>{ t('InvestSimple.BuiltWith') }</Typography>
-          </div>
-          <div className={ classes.languageContainer }>
-            <FormControl variant="outlined">
-              <Select
-                id="language"
-                value={ language }
-                onChange={ this.handleLanguageChange }
-                inputProps={{ className: classes.selectInput }}
-                color="primary"
-                fullWidth
-              >
-                { languages.map((language) => {
-                  return <MenuItem value={language.code}>{language.language}</MenuItem>
-                })}
-              </Select>
-            </FormControl>
-          </div>
-        </div>
         { modalOpen && this.renderModal() }
-        { modalBuiltWithOpen && this.renderBuiltWithModal() }
         { modalInvestAllOpen && this.renderInvestAllModal() }
         { snackbarMessage && this.renderSnackbar() }
       </div>
@@ -493,14 +390,6 @@ class InvestSimple extends Component {
     val[event.target.id] = event.target.checked
     this.setState(val)
   };
-
-  handleLanguageChange = (event) => {
-    let val = []
-    val.language = event.target.value
-    this.setState(val)
-
-    i18n.changeLanguage(event.target.value)
-  }
 
   renderAssetBlocks = () => {
     const { assets, expanded, hideV1 } = this.state
@@ -570,20 +459,9 @@ class InvestSimple extends Component {
     return <Snackbar type={ snackbarType } message={ snackbarMessage } open={true}/>
   };
 
-  unlockMetamask = () => {
-    this.setState({ metamaskLoading: true })
-    dispatcher.dispatch({ type: CONNECT_METAMASK, content: {} })
-  }
-
   renderModal = () => {
     return (
       <UnlockModal closeModal={ this.closeModal } modalOpen={ this.state.modalOpen } />
-    )
-  }
-
-  renderBuiltWithModal = () => {
-    return (
-      <BuiltWithModal closeModal={ this.closeBuiltWithModal } modalOpen={ this.state.modalBuiltWithOpen } />
     )
   }
 
@@ -599,14 +477,6 @@ class InvestSimple extends Component {
 
   closeModal = () => {
     this.setState({ modalOpen: false })
-  }
-
-  builtWithOverlayClicked = () => {
-    this.setState({ modalBuiltWithOpen: true })
-  }
-
-  closeBuiltWithModal = () => {
-    this.setState({ modalBuiltWithOpen: false })
   }
 
   investAllClicked = () => {
