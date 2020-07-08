@@ -172,10 +172,10 @@ class Asset extends Component {
           <Typography variant={ 'h3' }>{ (asset.maxApr*100).toFixed(4) + ' %' }</Typography>
           <Typography variant={ 'h5' }>{ t('Asset.InterestRate') }</Typography>
         </div>
-        {<div className={ `${classes.heading} ${classes.right}`}>
+        <div className={ `${classes.heading} ${classes.right}`}>
           <Typography variant={ 'h3' }>{(asset.balance).toFixed(4)+' '+( asset.tokenSymbol ? asset.tokenSymbol : asset.symbol )}</Typography>
           <Typography variant={ 'h5' }>{ t('Asset.AvailableBalance') }</Typography>
-        </div>}
+        </div>
       </div>
       <div className={ classes.tradeContainer }>
         {!asset.disabled && <div className={ classes.balances }>
